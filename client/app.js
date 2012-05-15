@@ -4,10 +4,8 @@
 
 var login = function (username, password) {
 	RPC("login", username, password, function (result) {
-		var sessionToken = result.sessionToken;
-		rememberSessionToken(sessionToken);
-
-		if (sessionToken) {
+		if (result.success) {
+			rememberSessionToken(result.sessionToken);
 			console.log("Password verified!");
 		} else {
 			console.log("Could not log you in with that username and/or password combination.");
@@ -17,8 +15,8 @@ var login = function (username, password) {
 
 var logout = function () {
 	RPC("logout", Session.get("token"), function (result) {
-		if (result.success === true) {
-			forgetSessionToken();
+		forgetSessionToken();
+		if (result.success) {
 			console.log("logout success");
 		} else {
 			console.log("logout failed:", result.reason);
@@ -28,7 +26,7 @@ var logout = function () {
 
 var addRecord = function (title, is_private) {
 	RPC("addRecord", title, is_private, Session.get("token"), function (result) {
-		if (result.success === true) {
+		if (result.success) {
 			console.log("addRecord success");
 		} else {
 			console.log("addRecord failed:", result.reason);
@@ -41,11 +39,11 @@ var addRecord = function (title, is_private) {
 *******************************************/
 
 Template.main.users = function () {
-	return Users.find();
+	return Users.find({});
 };
 
 Template.main.records = function () {
-	return Records.find();
+	return Records.find({});
 };
 
 Template.main.is_authenticated = function () {
@@ -83,7 +81,11 @@ Template.record_row.owner_name = function () {
 * Initialize
 *******************************************/
 
-Meteor.subscribe("users");
-Meteor.subscribe("records");
-
 initializeSessionToken();
+
+// TODO: when changing login/logout state, the users/records aren't reflected properly.
+// I think this has to do with my lack of understanding of how subscribe/publish ties to collections.
+Meteor.autosubscribe(function () {
+	Meteor.subscribe("users", Session.get("token"));
+	Meteor.subscribe("records", Session.get("token"));
+});

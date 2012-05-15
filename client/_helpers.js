@@ -2,13 +2,6 @@
 * RPC helper callback
 *******************************************/
 
-/**
-	Assumes result is formed of an object with
-	at minimum two properties:
-	1) result.success (boolean)
-	2) result.reason (string)
-*/
-
 var RPC = function () {
 	var args = arguments;
 	var callback = args[args.length - 1];

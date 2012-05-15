@@ -2,10 +2,12 @@
 * Authentication methods
 *******************************************/
 
-var getUserBySessionToken = function (sessionToken) {
+var Auth = {};
+
+Auth.getUserBySessionToken = function (sessionToken) {
 	var user;
 
-	if (isSessionTokenValid(sessionToken)) {
+	if (Auth.isSessionTokenValid(sessionToken)) {
 		user = Users.findOne({session_token: sessionToken});
 		if (user) {
 			return user;
@@ -13,7 +15,7 @@ var getUserBySessionToken = function (sessionToken) {
 	}
 };
 
-var isUserPasswordCorrect = function (user, password) {
+Auth.isUserPasswordCorrect = function (user, password) {
 	var bcrypt = __meteor_bootstrap__.require("bcrypt");
 
 	if (user && user.password_hash) {
@@ -23,29 +25,29 @@ var isUserPasswordCorrect = function (user, password) {
 	return false;
 };
 
-var getServerKey = function () {
+Auth.getServerKey = function () {
 	// This is meant to be a unique value for your application. Changing this will
 	// make any stored session tokens invalid and force users to re-authenticate.
 	return "552ad4c6f2c87b5ef6c4d29614d95f57";
 }
 
-var generateSignedToken = function () {
+Auth.generateSignedToken = function () {
 	var randomToken = CryptoJS.SHA256(Math.random().toString()).toString();
-	var signature = CryptoJS.HmacMD5(randomToken, getServerKey()).toString();
+	var signature = CryptoJS.HmacMD5(randomToken, Auth.getServerKey()).toString();
 	var signedToken = randomToken + ":" + signature;
 
 	return signedToken;
 };
 
-var isSessionTokenValid = function (sessionToken) {
+Auth.isSessionTokenValid = function (sessionToken) {
 	var parts = sessionToken.toString().split(":");
 	var token = parts[0];
 	var signature = parts[1];
 
-	return signature === CryptoJS.HmacMD5(token, getServerKey()).toString();
+	return signature === CryptoJS.HmacMD5(token, Auth.getServerKey()).toString();
 };
 
-var getSessionTokenByUser = function (user) {
+Auth.getSessionTokenByUser = function (user) {
 	var sessionToken;
 
 	// Generate signed token, but only if one isn't already
@@ -54,23 +56,23 @@ var getSessionTokenByUser = function (user) {
 	if (user.session_token) {
 		sessionToken = user.session_token;
 	} else {
-		sessionToken = generateSignedToken();
+		sessionToken = Auth.generateSignedToken();
 		Users.update(user._id, {$set: {session_token: sessionToken}});
 	}
 
 	return sessionToken;
 };
 
-var getSessionTokenByUsernamePassword = function (username, password) {
+Auth.getSessionTokenByUsernamePassword = function (username, password) {
 	var user = Users.findOne({username: username});
 
-	if (isUserPasswordCorrect(user, password)) {
-		return getSessionTokenByUser(user);
+	if (Auth.isUserPasswordCorrect(user, password)) {
+		return Auth.getSessionTokenByUser(user);
 	}
 };
 
-var clearUserBySessionToken = function (sessionToken) {
-	var user = getUserBySessionToken(sessionToken);
+Auth.clearUserBySessionToken = function (sessionToken) {
+	var user = Auth.getUserBySessionToken(sessionToken);
 
 	if (user) {
 		Users.update(user._id, {$unset: {session_token: 1}});

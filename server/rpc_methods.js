@@ -5,7 +5,7 @@
 var addUser = function (name, username, password, sessionToken) {
 	var user, result = {};
 
-	if (user = getUserBySessionToken(sessionToken)) {
+	if (user = Auth.getUserBySessionToken(sessionToken)) {
 		if (insertUser(name, username, password)) {
 			result.success = true;
 		} else {
@@ -25,7 +25,7 @@ var addUser = function (name, username, password, sessionToken) {
 var addRecord = function (title, is_private, sessionToken) {
 	var user, result = {};
 
-	if (user = getUserBySessionToken(sessionToken)) {
+	if (user = Auth.getUserBySessionToken(sessionToken)) {
 		if (insertRecord(title, user._id, is_private)) {
 			result.success = true;
 		} else {
@@ -45,7 +45,7 @@ var addRecord = function (title, is_private, sessionToken) {
 *******************************************/
 
 var login = function (username, password) {
-	var sessionToken = getSessionTokenByUsernamePassword(username, password);
+	var sessionToken = Auth.getSessionTokenByUsernamePassword(username, password);
 	var result = {};
 
 	if (sessionToken) {
@@ -60,7 +60,7 @@ var login = function (username, password) {
 };
 
 var logout = function (sessionToken) {
-	var success = clearUserBySessionToken(sessionToken);
+	var success = Auth.clearUserBySessionToken(sessionToken);
 	var result = {success: success === true};
 
 	if (success !== true) {
