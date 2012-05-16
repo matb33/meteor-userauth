@@ -1,0 +1,14 @@
+<template name="auth">
+	<section class="auth">
+		<h2>Authentication</h2>
+		{{#if is_authenticated}}
+			<button name="logout">Logout</button>
+		{{else}}
+			<form>
+				<label><span>Username:</span> <input name="username" /></label>
+				<label><span>Password:</span> <input name="password" type="password" /></label>
+				<button name="login">Login</button>
+			</form>
+		{{/if}}
+	</section>
+</template>

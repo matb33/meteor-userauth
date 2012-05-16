@@ -6,6 +6,27 @@ ul {
 	padding-left: 16px;
 }
 
+form label {
+	display: block;
+	clear: left;
+}
+
+form label span {
+	display: block;
+	float: left;
+	width: 100px;
+}
+
+form label span + input {
+	float: left;
+}
+
+form button {
+	display: block;
+	clear: left;
+	margin-left: 100px;
+}
+
 section,
 article,
 aside {
@@ -21,6 +42,20 @@ article {
 	border: 1px solid #ddd;
 }
 
+.auth {
+	background-color: #f0f0f8;
+}
+
+.users {
+	float: left;
+	width: 48%;
+}
+
+.notes {
+	float: right;
+	width: 48%;
+}
+
 .notes article {
 	float: left;
 	margin-right: 20px;
@@ -31,9 +66,10 @@ article {
 }
 
 .info {
+	clear: both;
 	display: none;
 	border: 1px solid #ddd;
-	background-color: #f0f0f0;
+	background-color: #fffff0;
 }
 
 .info.visible {

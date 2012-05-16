@@ -1,51 +1,15 @@
+<head>
+	<title>User auth example for Meteor JS</title>
+</head>
+
+<body>
+	{{> main}}
+</body>
+
 <template name="main">
 	<h1>User auth example in Meteor</h1>
+	{{> auth}}
+	{{> users}}
+	{{> notes}}
 	{{> info}}
-	<section class="authentication">
-		<h2>Authentication</h2>
-		{{#if is_authenticated}}
-			<button name="logout">Logout</button>
-		{{else}}
-			<form>
-				<label>Username: <input name="username" /></label>
-				<label>Password: <input name="password" type="password" /></label>
-				<button name="login">Login</button>
-			</form>
-		{{/if}}
-	</section>
-	<section class="users">
-		<h2>Users</h2>
-		<ul>
-			{{#each users}}
-				{{> user_row}}
-			{{/each}}
-		</ul>
-	</section>
-	<section class="notes">
-		<h2>Notes</h2>
-		{{#each users}}
-			<article>
-				<h3>{{name}}</h3>
-				<ul>
-					{{#each notes_for_user}}
-						{{> note_row}}
-					{{/each}}
-				</ul>
-			</article>
-		{{/each}}
-		<h3>Add note</h3>
-		<form>
-			<label>Title: <input name="new-note-title" /></label>
-			<label>Private: <input type="checkbox" name="new-note-is-private" /></label>
-			<button name="add-new-note">add</button>
-		</form>
-	</section>
-</template>
-
-<template name="user_row">
-	<li>{{name}}</li>
-</template>
-
-<template name="note_row">
-	<li>{{title}}{{#if is_private}} <strong><em>private</em></strong>{{/if}} {{#if is_owned_by_session_user}}<button name="delete">&times;</button>{{/if}}</li>
 </template>

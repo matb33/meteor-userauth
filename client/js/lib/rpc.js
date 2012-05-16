@@ -5,7 +5,7 @@
 var addUser = function (name, username, password) {
 	Meteor.call("addUser", getSessionToken(), name, username, password, function (error, result) {
 		if (!error) {
-			info("User " + username + " added successfully.");
+			info("User " + name + " added successfully.");
 		} else {
 			info(error.reason);
 		}
@@ -13,10 +13,11 @@ var addUser = function (name, username, password) {
 };
 
 var removeUser = function (user) {
-	var username = user.username;
+	var name = user.name;
 	Meteor.call("removeUser", getSessionToken(), user._id, function (error, result) {
 		if (!error) {
-			info("User " + username + " removed successfully.");
+			info("User " + name + " removed successfully.");
+			forgetSessionToken();	// can only remove self, so since we're deleted, log out!
 		} else {
 			info(error.reason);
 		}

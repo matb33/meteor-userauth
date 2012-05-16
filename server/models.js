@@ -15,7 +15,12 @@ var updateUser = function (user_id, properties) {
 	if (properties.username) set.username = properties.username;
 	if (properties.password) set.password_hash = Auth.generatePasswordHash(properties.password);
 
-	return Users.update(user_id, {$set: set});
+	try {
+		Users.update(user_id, {$set: set});
+		return true;
+	} catch(e) {
+		return false;
+	}
 };
 
 var deleteUser = function (user_id) {
@@ -24,7 +29,12 @@ var deleteUser = function (user_id) {
 		deleteNote(note._id);
 	});
 
-	return Users.remove(user_id);
+	try {
+		Users.remove(user_id);
+		return true;
+	} catch(e) {
+		return false;
+	}
 };
 
 /*******************************************
@@ -44,9 +54,19 @@ var updateNote = function (note_id, properties) {
 	if (properties.user_id) set.user_id = properties.user_id;
 	if (properties.is_private) set.is_private = properties.is_private;
 
-	return Notes.update(note_id, {$set: set});
+	try {
+		Notes.update(note_id, {$set: set});
+		return true;
+	} catch(e) {
+		return false;
+	}
 };
 
 var deleteNote = function (note_id) {
-	return Notes.remove(note_id);
+	try {
+		Notes.remove(note_id);
+		return true;
+	} catch(e) {
+		return false;
+	}
 };

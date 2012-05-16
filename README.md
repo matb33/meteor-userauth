@@ -1,8 +1,3 @@
 # User authentication example project for Meteor JS
 
-## Dependencies
-
-- bcrypt for Node.js:
-
-	cd /usr/lib/meteor/lib
-	npm install bcrypt
+This project is an attempt at demonstrating a simple use-case of authentication and some basic authorization for an application written using the Meteor framework.

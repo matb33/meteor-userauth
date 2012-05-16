@@ -1,0 +1,25 @@
+<template name="notes">
+	<section class="notes">
+		<h2>Notes</h2>
+		{{#each users}}
+			<article>
+				<h3>{{name}}</h3>
+				<ul>
+					{{#each notes_for_user}}
+						{{> note_row}}
+					{{/each}}
+				</ul>
+			</article>
+		{{/each}}
+		<h3>Add note</h3>
+		<form>
+			<label><span>Title:</span> <input name="title" /></label>
+			<label><span>Private:</span> <input type="checkbox" name="is_private" /></label>
+			<button name="add">add</button>
+		</form>
+	</section>
+</template>
+
+<template name="note_row">
+	<li>{{title}}{{#if is_private}} <strong><em>private</em></strong>{{/if}} {{#if is_owned_by_session_user}}<button name="delete">&times;</button>{{/if}}</li>
+</template>

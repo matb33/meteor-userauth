@@ -1,7 +1,7 @@
 // Example usage:
 // var Auth = auth(Users, "login", "password_hash", "session_token");
 
-var auth = function (userCollection, usernameField, passwordHashField, sessionTokenField) {
+var auth = function (userCollection, usernameField, passwordHashField, sessionTokenHashField) {
 
 	// The server key is meant to be a unique value for your application. Changing
 	// this will make any stored session-tokens invalid and force users to re-authenticate.
@@ -11,7 +11,7 @@ var auth = function (userCollection, usernameField, passwordHashField, sessionTo
 		var user, query = {};
 
 		if (isSessionTokenValid(sessionToken)) {
-			query[sessionTokenField] = sessionToken;
+			query[sessionTokenHashField] = getSessionTokenHash(sessionToken);
 			user = userCollection.findOne(query);
 			if (user) {
 				return user;
@@ -26,6 +26,10 @@ var auth = function (userCollection, usernameField, passwordHashField, sessionTo
 
 		return hash;
 	};
+
+	var getSessionTokenHash = function (sessionToken) {
+		return CryptoJS.SHA256(sessionToken).toString();
+	}
 
 	var isUserPasswordCorrect = function (user, password) {
 		var bcrypt = require("bcrypt");
@@ -57,31 +61,27 @@ var auth = function (userCollection, usernameField, passwordHashField, sessionTo
 		return signature === CryptoJS.HmacMD5(token, serverKey).toString();
 	};
 
-	var getSessionTokenByUser = function (user) {
+	var getSessionTokenForUser = function (user) {
 		var sessionToken, set = {};
 
-		// Generate signed token, but only if one isn't already
-		// stored. This allows the user to maintain multiple
-		// sessions across different computers/browsers
-		if (user[sessionTokenField]) {
-			sessionToken = user[sessionTokenField];
-		} else {
-			sessionToken = generateSignedToken();
-			set[sessionTokenField] = sessionToken;
-			userCollection.update(user._id, {$set: set});
-		}
+		// Always generate signed token, since we have no way to retrieve
+		// it once it has been sent to the client upon login. We only store
+		// a hash of this token in the DB for security reasons.
+		sessionToken = generateSignedToken();
+		set[sessionTokenHashField] = getSessionTokenHash(sessionToken);
+		userCollection.update(user._id, {$set: set});
 
 		return sessionToken;
 	};
 
-	var getSessionTokenByUsernamePassword = function (username, password) {
+	var getSessionTokenForUsernamePassword = function (username, password) {
 		var query = {}, user;
 
 		query[usernameField] = username;
 		user = userCollection.findOne(query);
 
 		if (isUserPasswordCorrect(user, password)) {
-			return getSessionTokenByUser(user);
+			return getSessionTokenForUser(user);
 		}
 	};
 
@@ -90,14 +90,14 @@ var auth = function (userCollection, usernameField, passwordHashField, sessionTo
 		var unset = {};
 
 		if (user) {
-			unset[sessionTokenField] = 1;
+			unset[sessionTokenHashField] = 1;
 			userCollection.update(user._id, {$unset: unset});
 			return true;
 		}
 	};
 
 	return {
-		getSessionTokenByUsernamePassword: getSessionTokenByUsernamePassword,
+		getSessionTokenForUsernamePassword: getSessionTokenForUsernamePassword,
 		clearUserBySessionToken: clearUserBySessionToken,
 		getUserBySessionToken: getUserBySessionToken,
 		generatePasswordHash: generatePasswordHash

@@ -1,0 +1,21 @@
+<template name="users">
+	<section class="users">
+		<h2>Users</h2>
+		<ul>
+			{{#each users}}
+				{{> user_row}}
+			{{/each}}
+		</ul>
+		<h3>Add user</h3>
+		<form>
+			<label><span>Name:</span> <input name="name" /></label>
+			<label><span>Username:</span> <input name="username" /></label>
+			<label><span>Password:</span> <input name="password" type="password" /></label>
+			<button name="add">add</button>
+		</form>
+	</section>
+</template>
+
+<template name="user_row">
+	<li>{{name}} {{#if is_session_user}}<button name="delete">&times;</button>{{/if}}</li>
+</template>

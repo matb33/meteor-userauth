@@ -4,7 +4,7 @@ var bootstrap = function () {
 	var darren = Users.findOne({username: "darren"});
 
 	if (mat === undefined) {
-		mat = Users.findOne({_id: insertUser("Mathieu Bouchard", "mathieu", "test")});
+		mat = Users.findOne({_id: insertUser("Mathieu Bouchard", "mathieu", "password")});
 	}
 
 	if (jon === undefined) {

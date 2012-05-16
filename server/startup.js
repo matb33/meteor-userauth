@@ -8,8 +8,8 @@ Meteor.startup(function () {
 	Auth = auth(Users, "username", "password_hash", "session_token");
 
 	// Lock down various collections so as to prevent clients from modifying
-	// them directly. We use the methods in rpc_endpoints.js to modify
-	// collections, which are exposed carefully via Meteor.methods.
+	// them directly. We use the methods in rpc-endpoints.js to modify
+	// collections, which are exposed carefully via Meteor.methods().
 	Meteor.default_server.method_handlers["/users/insert"] = function() {};
 	Meteor.default_server.method_handlers["/users/update"] = function() {};
 	Meteor.default_server.method_handlers["/users/remove"] = function() {};
