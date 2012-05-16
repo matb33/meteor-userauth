@@ -108,7 +108,7 @@ These are helper methods having to do with the session token and cookie. On star
 
 `forgetSessionToken` is called on logout.
 
-`getSessionToken` is a simple abstraction so that we're not called `Session.get("token")` throughout our own code.
+`getSessionToken` is a simple abstraction so that we're not calling `Session.get("token")` throughout our own code.
 
 #### `client/js/lib/subscribe.js`
 
@@ -215,4 +215,5 @@ Contains only `node_modules/bcrypt/`, which is the NodeJS bcrypt library used to
 - Special thanks to [Jonathan Kingston](https://github.com/jonathanKingston) of Britto fame for providing me a launch platform for understanding manual pub-sub in Meteor;
 - StackOverflow for help in figuring out security best practices (bcrypt, etc);
 - [node.bcrypt.js](https://github.com/ncb000gt/node.bcrypt.js/);
-- [CryptoJS](http://code.google.com/p/crypto-js/).
+- [CryptoJS](http://code.google.com/p/crypto-js/);
+- [Darren Schnare](https://github.com/dschnare) for some help in trying to debug what turned out to be a bug in Meteor ;-)
