@@ -3,11 +3,22 @@
 *******************************************/
 
 var addUser = function (name, username, password) {
-	Meteor.call("addUser", Session.get("token"), name, username, password, function (error, result) {
+	Meteor.call("addUser", getSessionToken(), name, username, password, function (error, result) {
 		if (!error) {
-			console.log("addUser success");
+			info("User " + username + " added successfully.");
 		} else {
-			console.log(JSON.stringify(error));
+			info(error.reason);
+		}
+	});
+};
+
+var removeUser = function (user) {
+	var username = user.username;
+	Meteor.call("removeUser", getSessionToken(), user._id, function (error, result) {
+		if (!error) {
+			info("User " + username + " removed successfully.");
+		} else {
+			info(error.reason);
 		}
 	});
 };
@@ -17,11 +28,22 @@ var addUser = function (name, username, password) {
 *******************************************/
 
 var addNote = function (title, is_private) {
-	Meteor.call("addNote", Session.get("token"), title, is_private, function (error, result) {
+	Meteor.call("addNote", getSessionToken(), title, is_private, function (error, result) {
 		if (!error) {
-			console.log("addNote success");
+			info("Note '" + title + "' added successfully.");
 		} else {
-			console.log(JSON.stringify(error));
+			info(error.reason);
+		}
+	});
+};
+
+var removeNote = function (note) {
+	var title = note.title;
+	Meteor.call("removeNote", getSessionToken(), note._id, function (error, result) {
+		if (!error) {
+			info("Note '" + title + "' removed successfully.");
+		} else {
+			info(error.reason);
 		}
 	});
 };
@@ -34,20 +56,20 @@ var login = function (username, password) {
 	Meteor.call("login", username, password, function (error, sessionToken) {
 		if (!error) {
 			rememberSessionToken(sessionToken);
-			console.log("Password verified!");
+			info("Password verified!");
 		} else {
-			console.log(JSON.stringify(error));
+			info(error.reason);
 		}
 	});
 };
 
 var logout = function () {
-	Meteor.call("logout", Session.get("token"), function (error, result) {
+	Meteor.call("logout", getSessionToken(), function (error, result) {
 		forgetSessionToken();
 		if (!error) {
-			console.log("logout success");
+			info("Logout successful.");
 		} else {
-			console.log(JSON.stringify(error));
+			info(error.reason);
 		}
 	});
 };

@@ -1,3 +1,6 @@
+// Example usage:
+// var Auth = auth(Users, "login", "password_hash", "session_token");
+
 var auth = function (userCollection, usernameField, passwordHashField, sessionTokenField) {
 
 	// The server key is meant to be a unique value for your application. Changing
@@ -17,7 +20,7 @@ var auth = function (userCollection, usernameField, passwordHashField, sessionTo
 	};
 
 	var generatePasswordHash = function (password) {
-		var bcrypt = __meteor_bootstrap__.require("bcrypt");
+		var bcrypt = require("bcrypt");
 		var salt = bcrypt.genSaltSync(10);
 		var hash = bcrypt.hashSync(password, salt);
 
@@ -25,7 +28,7 @@ var auth = function (userCollection, usernameField, passwordHashField, sessionTo
 	};
 
 	var isUserPasswordCorrect = function (user, password) {
-		var bcrypt = __meteor_bootstrap__.require("bcrypt");
+		var bcrypt = require("bcrypt");
 
 		if (user && user[passwordHashField]) {
 			return bcrypt.compareSync(password, user[passwordHashField]);

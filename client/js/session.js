@@ -1,3 +1,7 @@
+Meteor.startup(function () {
+	initializeSessionToken();
+});
+
 var initializeSessionToken = function () {
 	Session.set("token", $.cookie("X_SESSION_TOKEN") || "unknown");
 };
@@ -12,6 +16,10 @@ var rememberSessionToken = function (sessionToken) {
 var forgetSessionToken = function () {
 	$.cookie("X_SESSION_TOKEN", "unknown");
 	Session.set("token", "unknown");
+};
+
+var getSessionToken = function () {
+	return Session.get("token");
 };
 
 /**

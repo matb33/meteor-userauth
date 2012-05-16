@@ -15,7 +15,7 @@ Template.main.notes_for_user = function () {
 };
 
 Template.main.is_authenticated = function () {
-	return Session.get("token") !== "unknown";
+	return getSessionToken() !== "unknown";
 };
 
 Template.main.events = {
@@ -54,5 +54,6 @@ Template.note_row.is_owned_by_session_user = function () {
 
 Template.note_row.events = {
 	"click button[name='delete']": function (evt) {
+		removeNote(this);
 	}
 };

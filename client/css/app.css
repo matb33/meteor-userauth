@@ -1,0 +1,41 @@
+h1, h2, h3, h4, h5, h6, p {
+	margin: 0px 0px 10px 0px;
+}
+
+ul {
+	padding-left: 16px;
+}
+
+section,
+article,
+aside {
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+section {
+	border: 1px solid #ccc;
+}
+
+article {
+	border: 1px solid #ddd;
+}
+
+.notes article {
+	float: left;
+	margin-right: 20px;
+}
+
+.notes h3 {
+	clear: left;
+}
+
+.info {
+	display: none;
+	border: 1px solid #ddd;
+	background-color: #f0f0f0;
+}
+
+.info.visible {
+	display: block;
+}
