@@ -2,6 +2,8 @@
 * Users
 *******************************************/
 
+var Users = new Meteor.Collection("users");
+
 var insertUser = function (name, username, password) {
 	var user_id = Users.insert({name: name, username: username, password_hash: Auth.generatePasswordHash(password)});
 	return user_id;
@@ -29,11 +31,12 @@ var deleteUser = function (user_id) {
 * Notes
 *******************************************/
 
+var Notes = new Meteor.Collection("notes");
+
 var insertNote = function (title, user_id, is_private) {
 	var note_id = Notes.insert({title: title, user_id: user_id, is_private: is_private});
 	return note_id;
 };
-
 
 var updateNote = function (note_id, properties) {
 	var set = {};

@@ -1,5 +1,4 @@
-Meteor.startup(function () {
-
+var bootstrap = function () {
 	var mat = Users.findOne({username: "mathieu"});
 	var jon = Users.findOne({username: "jon"});
 	var darren = Users.findOne({username: "darren"});
@@ -29,4 +28,4 @@ Meteor.startup(function () {
 		insertNote("Darren's private note", darren._id, true);
 		insertNote("Darren's public note", darren._id, false);
 	}
-});
+};
