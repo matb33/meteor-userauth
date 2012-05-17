@@ -10,6 +10,41 @@ This project is an attempt at demonstrating a simple use-case of authentication 
 
 3. There is currently a bug somewhere that I have yet to figure out with regards to generating a collection within Meteor.publish. When observing a collection, and a document is *removed*, that change doesn't appear to get propagated back up to the client. Additions appear to work OK... only removals appear to be affected.
 
+## Security
+
+I've implemented security based on my accumulated experiences, mostly from perusing StackOverflow over the past few years and in writing implementations. As such, this implementation **may be totally flawed**. This is not at all a dig against SO; it's a dig against my own comfort-level with regards to my security knowledge. *I implore any security experts to carefully review this approach and make any suggestions for improvement.*
+
+Here's how I've approached security:
+
+#### Creating user:
+
+1. Client sends login/password (and other user details) in plaintext to the server (ideally via https)
+2. Server generates password-hash from password using bcrypt, stores said hash in DB in user's row:
+
+		var salt = bcrypt.genSaltSync(10);
+		var hash = bcrypt.hashSync(password, salt);
+
+#### User logging in by login/password:
+
+1. Client sends login/password in plaintext to the server (ideally via https);
+2. Server looks up user in DB by login;
+3. Server uses bcrypt to check password against password-hash in DB (`bcrypt.compareSync`)
+4. If correct, server generates a signed token:
+
+		var randomToken = CryptoJS.SHA256(Math.random().toString()).toString();
+		var signature = CryptoJS.HmacMD5(randomToken, serverKey).toString();
+		var signedToken = randomToken + ":" + signature;
+
+5. Signed token is hashed and stored in DB in user's row;
+6. Server sends signed token to client, which it can store in a cookie if it pleases. The signed token is not saved on the server. The client can then use this session token in subsequent requests to identify itself.
+
+#### User accessing resources using session token:
+
+1. Client sends session token in plaintext to the server;
+2. Server verifies the integrity of the session token (signed by server);
+3. If successful, retrieves user row by hashing the session token, and looking for this same hash in the DB (stored in step 5 above).
+4. Server can do what it wants with user row, such as allowing/denying access etc.
+
 ## Installation
 
 ### Meteor
@@ -26,7 +61,7 @@ You don't explicitly need npm for Userauth, but you *do* need bcrypt. I'm using 
 
 ## Overview
 
-If you want to see it in action right now, head on over to <http://userauth.meteor.com/> (*currently not working, not sure why. It may be because of the dependency on the bcrypt node module*). Usernames/passwords can be found under `server/bootstrap.js`. To get you started, try the login *mathieu* and password *password*.
+If you want to see it in action right now, head on over to <http://userauth.meteor.com/> (*currently not working, not sure why. It may be because of the dependency on the bcrypt node module*). Example usernames/passwords can be found under `server/bootstrap.js`. To get you started, try the login *mathieu* and password *password*.
 
 I'll briefly explain what each folder and file is used for in the project.
 
@@ -161,39 +196,6 @@ But in simple terms, what's happening is that "notes" are returned differently d
 #### `server/auth/auth.js`
 
 bcrypt, SHA256, HMAC, this is where it all happens.
-
-I've implemented this based on my accumulated experiences, mostly from perusing StackOverflow over the past few years and in writing implementations. As such, this implementation **may be totally flawed**. This is not at all a dig against SO; it's a dig against my own comfort-level with regards to my security knowledge. *I implore any security experts to carefully review this code and make any suggestions for improvement.*
-
-Here's how I've approached security:
-
-##### Creating user:
-
-1. Client sends login/password (and other user details) in plaintext to the server (ideally via https)
-2. Server generates password-hash from password using bcrypt, stores said hash in DB in user's row:
-
-		var salt = bcrypt.genSaltSync(10);
-		var hash = bcrypt.hashSync(password, salt);
-
-##### User logging in by login/password:
-
-1. Client sends login/password in plaintext to the server (ideally via https);
-2. Server looks up user in DB by login;
-3. Server uses bcrypt to check password against password-hash in DB (`bcrypt.compareSync`)
-4. If correct, server generates a signed token:
-
-		var randomToken = CryptoJS.SHA256(Math.random().toString()).toString();
-		var signature = CryptoJS.HmacMD5(randomToken, serverKey).toString();
-		var signedToken = randomToken + ":" + signature;
-
-5. Signed token is hashed and stored in DB in user's row;
-6. Server sends signed token to client, which it can store in a cookie if it pleases. The signed token is not saved on the server. The client can then use this session token in subsequent requests to identify itself.
-
-##### User accessing resources using session token:
-
-1. Client sends session token in plaintext to the server;
-2. Server verifies the integrity of the session token (signed by server);
-3. If successful, retrieves user row by hashing the session token, and looking for this same hash in the DB (stored in step 5 above).
-4. Server can do what it wants with user row, such as allowing/denying access etc.
 
 #### `server/auth/crypto.hmac-md5.js`
 
