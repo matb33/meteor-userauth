@@ -65,9 +65,7 @@ If you want to see it in action right now, head on over to <http://userauth.mete
 
 I'll briefly explain what each folder and file is used for in the project.
 
-## `client/`
-
-Holds all files that are sent to the client (browser).
+## Client-side
 
 ### CSS
 
@@ -155,9 +153,7 @@ We subscribe to `publishedUsers` and `publishedNotes`, and pass down our session
 
 Additionally, we wrap all of this in an `autosubscribe` so as to make the whole thing reactive. Now, whenever the session token changes (log in or log out), the users/notes will get updated.
 
-### `server/`
-
-Holds all files that are sent to the server (NodeJS).
+### Server-side
 
 #### `server/startup.js`
 
@@ -209,7 +205,7 @@ bcrypt, SHA256, HMAC, this is where it all happens.
 
 Near identical adaptation of the `require` code by Jonathan Kingston, which I found in a [StackOverflow answer](http://stackoverflow.com/questions/10476170/how-can-i-deploy-node-modules-in-a-meteor-app-on-meteor-com).
 
-### `public/`
+### The `public/` folder
 
 Contains only `node_modules/bcrypt/`, which is the NodeJS bcrypt library used to hash passwords on the server. Yes, it's in `public/`... but hopefully a better method to package up node modules (like, under `server/`) will be devised soon.
 
