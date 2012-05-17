@@ -1,5 +1,5 @@
 // Example usage:
-// var Auth = auth(Users, "login", "password_hash", "session_token");
+// var Auth = auth(Users, "login", "password_hash", "session_token_hash");
 
 var auth = function (userCollection, usernameField, passwordHashField, sessionTokenHashField) {
 
