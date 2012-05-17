@@ -1,7 +1,7 @@
 // Example usage:
-// var Auth = auth(Users, "login", "password_hash", "session_token_hash");
+// var Auth = makeAuthenticationManager(Users, "login", "password_hash", "session_token_hash");
 
-var auth = function (userCollection, usernameField, passwordHashField, sessionTokenHashField) {
+var makeAuthenticationManager = function (userCollection, usernameField, passwordHashField, sessionTokenHashField) {
 
 	// The server key is meant to be a unique value for your application. Changing
 	// this will make any stored session-tokens invalid and force users to re-authenticate.

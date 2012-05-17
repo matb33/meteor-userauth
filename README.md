@@ -187,21 +187,21 @@ This is where it gets a bit more complicated. The complicated part doesn't come 
 
 This is accomplished using the `observe` method on cursors, along with some fancy footwork with `.set`, `.flush`, `.onStop`, etc. This [post on StackOverflow](http://stackoverflow.com/questions/10565654/how-does-the-messages-count-example-in-meteor-docs-work) may help you better understand exactly what's going on.
 
-But in simple terms, what's happening is that "notes" are returned differently depending on whether the user is logged-in or not. Additionally (and more complicated), both "notes" and "users" have virtual attributes added, which are computed on-the-fly. They are helper attributes that we use client-side (`__is_owned_by_session_user` and `__is_session_user`).
+In summary, what's happening is that "users" and "notes" are returned differently depending on whether the user is logged-in or not. Additionally (and IMO more complicated), both "notes" and "users" have virtual attributes added, which are computed on-the-fly. They are helper attributes that we use client-side (`__is_owned_by_session_user` and `__is_session_user`).
 
-#### `server/auth/auth.js`
+#### `server/authentication/make-authentication-manager.js`
 
-bcrypt, SHA256, HMAC, this is where it all happens.
+bcrypt, SHA256, HMAC, this is where it all happens. The `makeAuthenticationManager` function is a maker function with parameters to allow defining the user collection and user document field-names to affect.
 
-#### `server/auth/crypto.hmac-md5.js`
+#### `server/authentication/crypto.hmac-md5.js`
 
 [CryptoJS](http://code.google.com/p/crypto-js/) library for HMAC MD5.
 
-#### `server/auth/crypto.sha256.js`
+#### `server/authentication/crypto.sha256.js`
 
 [CryptoJS](http://code.google.com/p/crypto-js/) library for SHA256.
 
-#### `server/auth/nodejs_require.js`
+#### `server/authentication/nodejs-require.js`
 
 Near identical adaptation of the `require` code by Jonathan Kingston, which I found in a [StackOverflow answer](http://stackoverflow.com/questions/10476170/how-can-i-deploy-node-modules-in-a-meteor-app-on-meteor-com).
 
