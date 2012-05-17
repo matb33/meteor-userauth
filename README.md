@@ -26,6 +26,8 @@ You don't explicitly need npm for Userauth, but you *do* need bcrypt. I'm using 
 
 ## Overview
 
+If you want to see it in action right now, head on over to <http://userauth.meteor.com/> (*currently not working, not sure why. It may be because of the dependency on the bcrypt node module*). Usernames/passwords can be found under `server/bootstrap.js`. To get you started, try the login *mathieu* and password *password*.
+
 I'll briefly explain what each folder and file is used for in the project.
 
 ## `client/`
