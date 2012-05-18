@@ -5,7 +5,7 @@ Meteor.startup(function () {
 	// Setup global Auth object, which holds various methods to manage
 	// authentication. Parameters allow you to customize which collection and
 	// fields should be managed.
-	Auth = authentication(Users, "username", "password_hash", "session_token_hash");
+	Auth = makeAuthenticationManager(Users, "username", "password_hash", "session_token_hash");
 
 	// Lock down various collections so as to prevent clients from modifying
 	// them directly. We use the methods in rpc-endpoints.js to modify

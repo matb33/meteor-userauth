@@ -4,11 +4,9 @@ This project is an attempt at demonstrating a simple use-case of authentication 
 
 ## Important notes
 
-1. When logging in, your login and password are sent down to the server in plaintext through Meteor RPC (Meteor.call). I am open to suggestions here, but as far as I understand it, this is the job of HTTPS.
+1. When logging in, your login and password are sent down to the server in plaintext through Meteor RPC (Meteor.call). I am open to suggestions here, but as far as I understand it, this is the job of HTTPS;
 
-2. Some of the functionality with pub-sub depends on some bug fixes present only in > 0.3.5. See [this stackoverflow question](http://stackoverflow.com/questions/10608341/possible-meteor-bug-in-manual-publish-subscribe-scenario) for details if you're curious. As of the time of this writing, where 0.3.5 is the master branch, only the devel branch works.
-
-3. There is currently a bug somewhere that I have yet to figure out with regards to generating a collection within Meteor.publish. When observing a collection, and a document is *removed*, that change doesn't appear to get propagated back up to the client. Additions appear to work OK... only removals appear to be affected.
+2. You'll need Meteor 0.3.6 or higher (run `meteor update` if you have an older version);
 
 ## Security
 
@@ -29,7 +27,7 @@ Here's how I've approached security:
 1. Client sends login/password in plaintext to the server (ideally via https);
 2. Server looks up user in DB by login;
 3. Server uses bcrypt to check password against password-hash in DB (`bcrypt.compareSync`)
-4. If correct, server generates a signed token:
+4. If correct, server generates a signed token (note the serverKey, which is a unique value you define server-side in code):
 
 		var randomToken = CryptoJS.SHA256(Math.random().toString()).toString();
 		var signature = CryptoJS.HmacMD5(randomToken, serverKey).toString();
@@ -49,7 +47,7 @@ Here's how I've approached security:
 
 ### Meteor
 
-Since we'll soon be seeing a new version of Meteor > 0.3.5, I won't bother explaining how to install the devel branch (needed for a bug fix). Instead, follow the usual installation instructions over at <https://github.com/meteor/meteor>, and hopefully by the time you find this project, a newer version of Meteor will be out! Otherwise, get your hands dirty and setup meteor using the devel branch.
+Follow the usual installation instructions over at <https://github.com/meteor/meteor>. If you already have meteor, make sure you have at least version 0.3.6.
 
 ### Userauth (this project)
 
@@ -183,11 +181,9 @@ As briefly described in the client equivalent (rpc.js), these are the RPC endpoi
 
 #### `server/publish.js`
 
-This is where it gets a bit more complicated. The complicated part doesn't come from providing different sets of notes depending on privileges. The complicated part (at least in my opinion) is when you want to send back a virtual collection, i.e. a collection that you construct within your publish.
+Here we define the collections we want to expose to the client. We have the opportunity to massage them before sending them out. Since the `sessionToken` is passed down our publish functions, we can choose to filter the collections based on user privileges.
 
-This is accomplished using the `observe` method on cursors, along with some fancy footwork with `.set`, `.flush`, `.onStop`, etc. This [post on StackOverflow](http://stackoverflow.com/questions/10565654/how-does-the-messages-count-example-in-meteor-docs-work) may help you better understand exactly what's going on.
-
-In summary, what's happening is that "users" and "notes" are returned differently depending on whether the user is logged-in or not. Additionally (and IMO more complicated), both "notes" and "users" have virtual attributes added, which are computed on-the-fly. They are helper attributes that we use client-side (`__is_owned_by_session_user` and `__is_session_user`).
+Additionally, using the `publishModifiedCursor` extension I adapted from the built-in `_publishCursor`, you can add computed fields to the cursor (such as `__is_owned_by_session_user` and `__is_session_user`, in this case).
 
 #### `server/authentication/make-authentication-manager.js`
 
