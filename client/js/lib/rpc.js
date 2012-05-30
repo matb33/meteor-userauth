@@ -4,8 +4,8 @@ var RPC = {
 	* Users
 	*******************************************/
 
-	addUser: function (name, username, password) {
-		Meteor.call("addUser", getSessionToken(), name, username, password, function (error, result) {
+	createUser: function (name, username, password) {
+		Meteor.call("createUser", getSessionToken(), name, username, password, function (error, result) {
 			if (!error) {
 				info("User " + name + " added successfully.");
 			} else {
@@ -14,9 +14,9 @@ var RPC = {
 		});
 	},
 
-	removeUser: function (user) {
+	deleteUser: function (user) {
 		var name = user.name;
-		Meteor.call("removeUser", getSessionToken(), user._id, function (error, result) {
+		Meteor.call("deleteUser", getSessionToken(), user._id, function (error, result) {
 			if (!error) {
 				info("User " + name + " removed successfully.");
 				forgetSessionToken();	// can only remove self, so since we're deleted, log out!
@@ -30,8 +30,8 @@ var RPC = {
 	* Notes
 	*******************************************/
 
-	addNote: function (title, is_private) {
-		Meteor.call("addNote", getSessionToken(), title, is_private, function (error, result) {
+	createNote: function (title, is_private) {
+		Meteor.call("createNote", getSessionToken(), title, is_private, function (error, result) {
 			if (!error) {
 				info("Note '" + title + "' added successfully.");
 			} else {
@@ -40,9 +40,9 @@ var RPC = {
 		});
 	},
 
-	removeNote: function (note) {
+	deleteNote: function (note) {
 		var title = note.title;
-		Meteor.call("removeNote", getSessionToken(), note._id, function (error, result) {
+		Meteor.call("deleteNote", getSessionToken(), note._id, function (error, result) {
 			if (!error) {
 				info("Note '" + title + "' removed successfully.");
 			} else {
