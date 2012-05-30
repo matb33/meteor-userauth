@@ -53,15 +53,21 @@ Follow the usual installation instructions over at <https://github.com/meteor/me
 
 Userauth isn't setup as a Meteor package. Since it's a proof-of-concept, you'll need to clone the repository and play around/learn how it works, then pull it apart and adapt it for your own application. So go ahead and clone it.
 
+Once you have it installed, make sure to run `npm install` in the root of the project folder to have the bcrypt node module compiled and installed.
+
 ### npm & bcrypt
 
 You don't explicitly need npm for Userauth, but you *do* need bcrypt. I'm using the [public/node_modules](http://stackoverflow.com/questions/10476170/how-can-i-deploy-node-modules-in-a-meteor-app-on-meteor-com) trick, but if that doesn't work for you, you will need to use npm to install [bcrypt](https://github.com/ncb000gt/node.bcrypt.js/) under `/usr/local/meteor/lib`.
 
 ## Overview
 
-If you want to see it in action right now, head on over to <http://userauth.meteor.com/> (*currently not working, not sure why. It may be because of the dependency on the bcrypt node module*). Example usernames/passwords can be found under `server/bootstrap.js`. To get you started, try the login *mathieu* and password *password*.
+If you want to see it in action right now, head on over to <http://meteor-userauth.herokuapp.com/>. Example usernames/passwords can be found under `server/bootstrap.js`. To get you started, try the login *mathieu* and password *password*.
 
 I'll briefly explain what each folder and file is used for in the project.
+
+## `package.json`
+
+This is used mostly to enable deployment to Heroku with regards to managing node module dependencies (bcrypt). But it's also great for installing node modules locally. Simply run `npm install` and the dependencies will get installed (and moved to the `public/node_modules` folder too).
 
 ## Client-side
 
