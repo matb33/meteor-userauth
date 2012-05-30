@@ -1,11 +1,7 @@
 // Example usage:
-// var Auth = makeAuthenticationManager(Users, "login", "password_hash", "session_token_hash");
+// var Auth = makeAuthenticationManager("abc123", Users, "login", "password_hash", "session_token_hash");
 
-var makeAuthenticationManager = function (userCollection, usernameField, passwordHashField, sessionTokenHashField) {
-
-	// The server key is meant to be a unique value for your application. Changing
-	// this will make any stored session-tokens invalid and force users to re-authenticate.
-	var serverKey = "552ad4c6f2c87b5ef6c4d29614d95f57";
+var makeAuthenticationManager = function (serverKey, userCollection, usernameField, passwordHashField, sessionTokenHashField) {
 
 	var getUserBySessionToken = function (sessionToken) {
 		var user, query = {};

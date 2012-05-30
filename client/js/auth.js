@@ -8,7 +8,7 @@ Template.auth.is_authenticated = function () {
 
 Template.auth.events = {
 	"click button[name='login']": function (evt) {
-		login(
+		RPC.login(
 			$("input[name='username']").val(),
 			$("input[name='password']").val()
 		);
@@ -16,6 +16,6 @@ Template.auth.events = {
 		evt.preventDefault();
 	},
 	"click button[name='logout']": function (evt) {
-		logout();
+		RPC.logout();
 	}
 };

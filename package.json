@@ -1,0 +1,13 @@
+{
+	"name": "meteor-userauth",
+	"version": "0.0.1",
+	"engines": {
+		"node": "0.6.x"
+	},
+	"dependencies": {
+		"bcrypt": "0.5.0"
+	},
+	"scripts": {
+		"install": "mv -f node_modules public/node_modules"
+	}
+}

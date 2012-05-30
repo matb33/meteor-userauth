@@ -18,7 +18,7 @@ Template.notes.events = {
 	"click button[name='add']": function (evt) {
 		var $form = $(evt.target).closest("form");
 
-		addNote(
+		RPC.createNote(
 			$("input[name='title']", $form).val(),
 			$("input[name='is_private']", $form).is(":checked")
 		);
@@ -43,6 +43,6 @@ Template.note_row.is_owned_by_session_user = function () {
 
 Template.note_row.events = {
 	"click button[name='delete']": function (evt) {
-		removeNote(this);
+		RPC.deleteNote(this);
 	}
 };

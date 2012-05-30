@@ -9,21 +9,23 @@ Meteor.methods({
 	* Users
 	*******************************************/
 
-	addUser: function (sessionToken, name, username, password) {
+	createUser: function (sessionToken, name, username, password) {
+		var result;
 		var user = Auth.getUserBySessionToken(sessionToken);
 
 		if (!user) {
 			throw new Meteor.Error(403, "Not authorized to add a user.");
 		}
 
-		if (!insertUser(name, username, password)) {
+		if (!(result = insertUser(name, username, password))) {
 			throw new Meteor.Error(500, "Unknown error when adding a user.");
 		}
 
-		return true;
+		return result;
 	},
 
-	removeUser: function (sessionToken, user_id) {
+	deleteUser: function (sessionToken, user_id) {
+		var result;
 		var user = Auth.getUserBySessionToken(sessionToken);
 
 		if (!user) {
@@ -34,32 +36,34 @@ Meteor.methods({
 			throw new Meteor.Error(403, "Not authorized to remove this particular user (" + user_id + ").");
 		}
 
-		if (!deleteUser(user_id)) {
+		if (!(result = deleteUser(user_id))) {
 			throw new Meteor.Error(500, "Unknown error when removing a user.");
 		}
 
-		return true;
+		return result;
 	},
 
 	/*******************************************
 	* Notes
 	*******************************************/
 
-	addNote: function (sessionToken, title, is_private) {
+	createNote: function (sessionToken, title, is_private) {
+		var result;
 		var user = Auth.getUserBySessionToken(sessionToken);
 
 		if (!user) {
 			throw new Meteor.Error(403, "Not authorized to add a note.");
 		}
 
-		if (!insertNote(title, user._id, is_private)) {
+		if (!(result = createNote(title, user._id, is_private))) {
 			throw new Meteor.Error(500, "Unknown error when adding a note.");
 		}
 
-		return true;
+		return result;
 	},
 
-	removeNote: function (sessionToken, note_id) {
+	deleteNote: function (sessionToken, note_id) {
+		var result;
 		var user = Auth.getUserBySessionToken(sessionToken);
 		var note = Notes.findOne({_id: note_id});
 
@@ -75,11 +79,11 @@ Meteor.methods({
 			throw new Meteor.Error(403, "Not authorized to remove this particular note (" + note_id + ").")
 		}
 
-		if (!deleteNote(note_id)) {
+		if (!(result = deleteNote(note_id))) {
 			throw new Meteor.Error(500, "Unknown error when removing a note.");
 		}
 
-		return true;
+		return result;
 	},
 
 	/*******************************************
