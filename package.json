@@ -3,7 +3,7 @@
 	"version": "0.0.2",
 	"engines": {
 		"node": "0.6.19",
-		"npm": "1.1.24"
+		"npm": "1.0.106"
 	},
 	"dependencies": {
 		"bcrypt": "0.5.0"
