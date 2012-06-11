@@ -77,10 +77,6 @@ This is used mostly to enable deployment to Heroku with regards to managing node
 
 #### `models.js`
 
-This is where we create our client versions of collections "users" and "notes" via `new Meteor.Collection` calls.
-
-#### `models.js`
-
 The "users" and "notes" collections are created here. They are created both on the server and the client.
 
 For each of these collection types, there's a set of Create, Update and Delete functions. They'll do some basic sanity checks (like making sure some required properties are provided), but they *won't do any authorization checks*. This isn't their job. These are full-access functions. As long as you use them as intended, they'll modify your collections/documents. We do our authorization checks in `rpc-endpoints`, detailed next.
