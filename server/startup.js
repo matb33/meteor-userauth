@@ -6,7 +6,9 @@ Meteor.startup(function () {
 	// authentication. Parameters allow you to customize which collection and
 	// fields should be managed. The first parameter is the server key which
 	// is used to sign session tokens. Change it to some random value.
-	Auth = makeAuthenticationManager("552ad4c6f2c87b5ef6c4d29614d95f57", Users, "username", "password_hash", "session_token_hash");
+	Auth = makeAuthenticationManager("552ad4c6f2c87b5ef6c4d29614d95f57", {
+		usernameField: "username"
+	});
 
 	// Lock down various collections so as to prevent clients from modifying
 	// them directly. We use the methods in rpc-endpoints.js to modify

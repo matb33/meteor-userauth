@@ -1,14 +1,29 @@
-// Example usage:
-// var Auth = makeAuthenticationManager("abc123", Users, "login", "password_hash", "session_token_hash");
+/*
+Example usage:
 
-var makeAuthenticationManager = function (serverKey, userCollection, usernameField, passwordHashField, sessionTokenHashField) {
+var Auth = makeAuthenticationManager("unique_server_key_of_your_choosing_abc123", {
+	userCollection: Users,
+	usernameField: "login",
+	passwordHashField: "password_hash",
+	sessionTokenHashField: "session_token_hash"
+});
+*/
+
+var makeAuthenticationManager = function (serverKey, options) {
+
+	var settings = _.extend({
+		userCollection: Users,
+		usernameField: "login",
+		passwordHashField: "password_hash",
+		sessionTokenHashField: "session_token_hash"
+	}, options);
 
 	var getUserBySessionToken = function (sessionToken) {
 		var user, query = {};
 
 		if (isSessionTokenValid(sessionToken)) {
-			query[sessionTokenHashField] = getSessionTokenHash(sessionToken);
-			user = userCollection.findOne(query);
+			query[settings.sessionTokenHashField] = getSessionTokenHash(sessionToken);
+			user = settings.userCollection.findOne(query);
 			if (user) {
 				return user;
 			}
@@ -27,11 +42,22 @@ var makeAuthenticationManager = function (serverKey, userCollection, usernameFie
 		return CryptoJS.SHA256(sessionToken).toString();
 	}
 
-	var isUserPasswordCorrect = function (user, password) {
+	var isUserPasswordCorrect = function (user, testPassword) {
 		var bcrypt = require("bcrypt");
+		var userPassword;
 
-		if (user && user[passwordHashField]) {
-			return bcrypt.compareSync(password, user[passwordHashField]);
+		if (user && user[settings.passwordHashField]) {
+			userPassword = user[settings.passwordHashField];
+
+			if (!userPassword) {
+				userPassword = "";
+			}
+
+			if (!testPassword) {
+				testPassword = "";
+			}
+
+			return bcrypt.compareSync(testPassword, userPassword);
 		}
 
 		return false;
@@ -46,13 +72,15 @@ var makeAuthenticationManager = function (serverKey, userCollection, usernameFie
 	};
 
 	var isSessionTokenValid = function (sessionToken) {
+		var parts, token, signature;
+
 		if (!sessionToken) {
 			return false;
 		}
 
-		var parts = sessionToken.toString().split(":");
-		var token = parts[0];
-		var signature = parts[1];
+		parts = sessionToken.toString().split(":");
+		token = parts[0];
+		signature = parts[1];
 
 		return signature === CryptoJS.HmacMD5(token, serverKey).toString();
 	};
@@ -64,8 +92,8 @@ var makeAuthenticationManager = function (serverKey, userCollection, usernameFie
 		// it once it has been sent to the client upon login. We only store
 		// a hash of this token in the DB for security reasons.
 		sessionToken = generateSignedToken();
-		set[sessionTokenHashField] = getSessionTokenHash(sessionToken);
-		userCollection.update(user._id, {$set: set});
+		set[settings.sessionTokenHashField] = getSessionTokenHash(sessionToken);
+		settings.userCollection.update(user._id, {$set: set});
 
 		return sessionToken;
 	};
@@ -73,8 +101,8 @@ var makeAuthenticationManager = function (serverKey, userCollection, usernameFie
 	var getSessionTokenForUsernamePassword = function (username, password) {
 		var query = {}, user;
 
-		query[usernameField] = username;
-		user = userCollection.findOne(query);
+		query[settings.usernameField] = username;
+		user = settings.userCollection.findOne(query);
 
 		if (isUserPasswordCorrect(user, password)) {
 			return getSessionTokenForUser(user);
@@ -86,8 +114,8 @@ var makeAuthenticationManager = function (serverKey, userCollection, usernameFie
 		var unset = {};
 
 		if (user) {
-			unset[sessionTokenHashField] = 1;
-			userCollection.update(user._id, {$unset: unset});
+			unset[settings.sessionTokenHashField] = 1;
+			settings.userCollection.update(user._id, {$unset: unset});
 			return true;
 		}
 	};
@@ -96,6 +124,7 @@ var makeAuthenticationManager = function (serverKey, userCollection, usernameFie
 		getSessionTokenForUsernamePassword: getSessionTokenForUsernamePassword,
 		clearUserBySessionToken: clearUserBySessionToken,
 		getUserBySessionToken: getUserBySessionToken,
-		generatePasswordHash: generatePasswordHash
+		generatePasswordHash: generatePasswordHash,
+		isUserPasswordCorrect: isUserPasswordCorrect
 	};
 };

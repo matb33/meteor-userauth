@@ -175,7 +175,7 @@ Simply put, if the database is empty, it populates it with some sample data.
 
 The "users" and "notes" collections are created here.
 
-Also defined here are the near-raw CRUD (minus the R) operations on said collections. By near-raw, I mean they don't do any fancy authorization checks. And again by near-raw, they also do some basic sanity checks, such as in the update functions (`if (properties.name) set.name = properties.name;`).
+Also defined here are the near-raw CRUD (minus the R) operations on said collections. By near-raw, I mean they don't do any fancy authorization checks. And again by near-raw, they also do some basic sanity checks, such as in the update functions (`if (properties.name !== undefined) set.name = properties.name;`).
 
 #### `server/rpc-endpoints.js`
 
