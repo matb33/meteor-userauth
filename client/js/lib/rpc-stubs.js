@@ -6,11 +6,9 @@
 * get taken care of by Meteor.
 *******************************************/
 
+/*
 Meteor.methods({
 
-	/*******************************************
-	* Users
-	*******************************************/
 
 	createUser: function (sessionToken, name, username, password) {
 		var result;
@@ -48,9 +46,6 @@ Meteor.methods({
 		}
 	},
 
-	/*******************************************
-	* Notes
-	*******************************************/
 
 	createNote: function (sessionToken, title, is_private) {
 		var result;
@@ -101,9 +96,6 @@ Meteor.methods({
 		}
 	},
 
-	/*******************************************
-	* Authentication
-	*******************************************/
 
 	login: function (username, password) {
 	},
@@ -111,3 +103,4 @@ Meteor.methods({
 	logout: function (sessionToken) {
 	}
 });
+*/

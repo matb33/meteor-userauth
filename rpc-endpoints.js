@@ -1,6 +1,11 @@
 /*******************************************
-* Expose RPC endpoints to the client via
-* the Meteor.methods function
+These RPC methods are available on both the
+server and the client. When called on the
+server, they are authoritative. When called
+on the client, authorization is skipped
+where the client doesn't have enough info
+to make a judgement call. The server will
+take care of it. Meteor handles this for us.
 *******************************************/
 
 Meteor.methods({
@@ -11,7 +16,7 @@ Meteor.methods({
 
 	createUser: function (sessionToken, name, username, password) {
 		var result;
-		var user = Auth.getUserBySessionToken(sessionToken);
+		var user = this.is_simulation ? Users.findOne() : Auth.getUserBySessionToken(sessionToken);
 
 		if (!user) {
 			throw new Meteor.Error(403, "Not authorized to add a user. You must be logged-in to create one.");
@@ -25,9 +30,8 @@ Meteor.methods({
 	},
 
 	updateUser: function (sessionToken, user_id, properties) {
-		var result;
-		var user = Auth.getUserBySessionToken(sessionToken);
-		var existingUser;
+		var result, existingUser;
+		var user = this.is_simulation ? Users.findOne() : Auth.getUserBySessionToken(sessionToken);
 
 		if (!user) {
 			throw new Meteor.Error(403, "Not authorized to update a user.");
@@ -53,7 +57,7 @@ Meteor.methods({
 
 	deleteUser: function (sessionToken, user_id) {
 		var result;
-		var user = Auth.getUserBySessionToken(sessionToken);
+		var user = this.is_simulation ? Users.findOne() : Auth.getUserBySessionToken(sessionToken);
 
 		if (!user) {
 			throw new Meteor.Error(403, "Not authorized to remove a user.");
@@ -76,7 +80,7 @@ Meteor.methods({
 
 	createNote: function (sessionToken, title, is_private) {
 		var result;
-		var user = Auth.getUserBySessionToken(sessionToken);
+		var user = this.is_simulation ? Users.findOne() : Auth.getUserBySessionToken(sessionToken);
 
 		if (!user) {
 			throw new Meteor.Error(403, "Not authorized to add a note.");
@@ -91,7 +95,7 @@ Meteor.methods({
 
 	updateNote: function (sessionToken, note_id, properties) {
 		var result;
-		var user = Auth.getUserBySessionToken(sessionToken);
+		var user = this.is_simulation ? Users.findOne() : Auth.getUserBySessionToken(sessionToken);
 		var note = Notes.findOne({_id: note_id});
 
 		if (!user) {
@@ -115,7 +119,7 @@ Meteor.methods({
 
 	deleteNote: function (sessionToken, note_id) {
 		var result;
-		var user = Auth.getUserBySessionToken(sessionToken);
+		var user = this.is_simulation ? Users.findOne() : Auth.getUserBySessionToken(sessionToken);
 		var note = Notes.findOne({_id: note_id});
 
 		if (!user) {
@@ -142,22 +146,30 @@ Meteor.methods({
 	*******************************************/
 
 	login: function (username, password) {
-		var sessionToken = Auth.getSessionTokenForUsernamePassword(username, password);
+		var sessionToken;
 
-		if (!sessionToken) {
-			throw new Meteor.Error(401, "Invalid username and password combination.");
+		if (!this.is_simulation) {
+			sessionToken = Auth.getSessionTokenForUsernamePassword(username, password);
+
+			if (!sessionToken) {
+				throw new Meteor.Error(401, "Invalid username and password combination.");
+			}
+
+			return sessionToken;
 		}
-
-		return sessionToken;
 	},
 
 	logout: function (sessionToken) {
-		var result = Auth.clearUserBySessionToken(sessionToken);
+		var result;
 
-		if (!result) {
-			throw new Meteor.Error(412, "Unable to logout: session token not matching a user.");
+		if (!this.is_simulation) {
+			result = Auth.clearUserBySessionToken(sessionToken);
+
+			if (!result) {
+				throw new Meteor.Error(412, "Unable to logout: session token not matching a user.");
+			}
+
+			return result;
 		}
-
-		return result;
 	}
 });
