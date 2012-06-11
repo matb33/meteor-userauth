@@ -5,7 +5,11 @@
 var Users = new Meteor.Collection("users");
 
 var createUser = function (name, username, password) {
-	var user_id;
+	var user_id, hash = "";
+
+	if (typeof Auth !== "undefined") {
+		hash = Auth.generatePasswordHash(password);
+	}
 
 	try {
 		user_id = Users.insert({
@@ -13,7 +17,7 @@ var createUser = function (name, username, password) {
 			modified: Date.now(),
 			name: name,
 			username: username,
-			password_hash: Auth.generatePasswordHash(password)
+			password_hash: hash
 		});
 
 		return user_id;
@@ -24,10 +28,15 @@ var createUser = function (name, username, password) {
 
 var updateUser = function (user_id, properties) {
 	var set = {modified: Date.now()};
+	var hash = "";
+
+	if (typeof Auth !== "undefined") {
+		hash = Auth.generatePasswordHash(properties.password);
+	}
 
 	if (properties.name !== undefined) set.name = properties.name;
 	if (properties.username !== undefined) set.username = properties.username;
-	if (properties.password !== undefined) set.password_hash = Auth.generatePasswordHash(properties.password);
+	if (properties.password !== undefined) set.password_hash = hash;
 
 	if (_.size(set)) {
 		try {

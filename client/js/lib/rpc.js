@@ -14,6 +14,16 @@ var RPC = {
 		});
 	},
 
+	updateUser: function (user_id, properties) {
+		Meteor.call("updateUser", getSessionToken(), user_id, properties, function (error, result) {
+			if (!error) {
+				info("User ID " + user_id + " updated successfully.");
+			} else {
+				info(error.reason);
+			}
+		});
+	},
+
 	deleteUser: function (user) {
 		var name = user.name;
 		Meteor.call("deleteUser", getSessionToken(), user._id, function (error, result) {
@@ -34,6 +44,16 @@ var RPC = {
 		Meteor.call("createNote", getSessionToken(), title, is_private, function (error, result) {
 			if (!error) {
 				info("Note '" + title + "' added successfully.");
+			} else {
+				info(error.reason);
+			}
+		});
+	},
+
+	updateNote: function (note_id, properties) {
+		Meteor.call("updateNote", getSessionToken(), note_id, properties, function (error, result) {
+			if (!error) {
+				info("Note ID " + note_id + " updated successfully.");
 			} else {
 				info(error.reason);
 			}
