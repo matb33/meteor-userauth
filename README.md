@@ -65,9 +65,34 @@ If you want to see it in action right now, head on over to <http://meteor-userau
 
 I'll briefly explain what each folder and file is used for in the project.
 
-## `package.json`
+## Root-level (client and server shared)
+
+### NPM
+
+#### `package.json`
 
 This is used mostly to enable deployment to Heroku with regards to managing node module dependencies (bcrypt). But it's also great for installing node modules locally. Simply run `npm install` and the dependencies will get installed (and moved to the `public/node_modules` folder too).
+
+### JavaScript shared code
+
+#### `models.js`
+
+This is where we create our client versions of collections "users" and "notes" via `new Meteor.Collection` calls.
+
+#### `models.js`
+
+The "users" and "notes" collections are created here. They are created both on the server and the client.
+
+For each of these collection types, there's a set of Create, Update and Delete functions. They'll do some basic sanity checks (like making sure some required properties are provided), but they *won't do any authorization checks*. This isn't their job. These are full-access functions. As long as you use them as intended, they'll modify your collections/documents. We do our authorization checks in `rpc-endpoints`, detailed next.
+
+#### `rpc-endpoints.js`
+
+The technique used to set these up (i.e. defined both for server and client) allows our application to feel very responsive. This is where the latency compensation technique employed by Meteor is leveraged. When defining methods under `Meteor.methods` for both client and server, both of them will run the code. However, the client will run this code in *simulation* mode (i.e. it's meant to take a best guess at what the server will do in order to show results near instantly). The client will still write to the local database, but the server will decide if it needs to undo that if the server version of the call disagrees.
+This comes for free from Meteor, and is a really cool technique.
+
+- In almost all cases, we are passed the `sessionToken` as the first parameter. Subsequent parameters are function-specific.
+- If we're in simulation mode (i.e. client), we ignore `sessionToken` and grab the current user. If on the server, we retrieve the current user by calling `Auth.getUserBySessionToken`.
+- Then we do our checks. These range from simple to complex, whatever you want to prevent/allow, you do it here. Throwing exceptions for errors is the recommended way to go here.
 
 ## Client-side
 
@@ -125,10 +150,6 @@ Handles displaying/deleting notes. Note the `__is_owned_by_session_user` field, 
 
 Handles displaying/dismissing the info box.
 
-#### `client/js/lib/models.js`
-
-This is where we create our client versions of collections "users" and "notes" via `new Meteor.Collection` calls.
-
 #### `client/js/lib/rpc.js`
 
 These methods are RPC helpers meant to be called from within the various Meteor client functions like Template.xxx.yyy, Template.xxx.events, etc.
@@ -170,20 +191,6 @@ Finally, we call our bootstrap function, detailed next.
 #### `server/bootstrap.js`
 
 Simply put, if the database is empty, it populates it with some sample data.
-
-#### `server/models.js`
-
-The "users" and "notes" collections are created here.
-
-Also defined here are the near-raw CRUD (minus the R) operations on said collections. By near-raw, I mean they don't do any fancy authorization checks. And again by near-raw, they also do some basic sanity checks, such as in the update functions (`if (properties.name !== undefined) set.name = properties.name;`).
-
-#### `server/rpc-endpoints.js`
-
-As briefly described in the client equivalent (rpc.js), these are the RPC endpoints that our client calls via `Meteor.call`. The pattern is kept simple:
-
-- In almost all cases, we are passed the `sessionToken` as the first parameter. Subsequent parameters are function-specific.
-- We can call `Auth.getUserBySessionToken` to verify that the sessionToken provided matches up with a real user.
-- Then we do our checks. These range from simple to complex, whatever you want to prevent/allow, you do it here. Throwing exceptions for errors is the recommended way to go here.
 
 #### `server/publish.js`
 
