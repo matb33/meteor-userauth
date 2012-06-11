@@ -2,6 +2,10 @@
 
 This project is an attempt at demonstrating a simple use-case of authentication and some basic authorization for an application written using the Meteor framework.
 
+## UPDATE v0.0.2:
+
+-	Re-worked RPC structure and models to make use of dual-sided `Meteor.methods` (client and server). The previous version did not properly implement latency compensation as intended by Meteor. If you used my previous code as a base for learning Meteor, I suggest reviewing the changes so as not to perpetuate incorrect code structure.
+
 ## Important notes
 
 1. When logging in, your login and password are sent down to the server in plaintext through Meteor RPC (Meteor.call). I am open to suggestions here, but as far as I understand it, this is the job of HTTPS;
