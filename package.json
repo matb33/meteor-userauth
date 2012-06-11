@@ -2,7 +2,7 @@
 	"name": "meteor-userauth",
 	"version": "0.0.2",
 	"engines": {
-		"node": "0.6.19"
+		"node": "0.6.18"
 	},
 	"dependencies": {
 		"bcrypt": "0.5.0"
