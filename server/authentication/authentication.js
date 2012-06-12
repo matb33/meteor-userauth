@@ -5,9 +5,11 @@ var Auth = makeAuthenticationManager("unique_server_key_of_your_choosing_abc123"
 	userCollection: Users,
 	usernameField: "login",
 	passwordHashField: "password_hash",
-	sessionTokenHashField: "session_token_hash"
+	sessionCollection: UserSessions
 });
 */
+
+var UserSessions = new Meteor.Collection("authentication__user_sessions");
 
 var makeAuthenticationManager = function (serverKey, options) {
 
@@ -15,15 +17,35 @@ var makeAuthenticationManager = function (serverKey, options) {
 		userCollection: Users,
 		usernameField: "login",
 		passwordHashField: "password_hash",
-		sessionTokenHashField: "session_token_hash"
+		sessionCollection: UserSessions,
+		sessionLongevitySeconds: 7 * 24 * 60 * 60
 	}, options);
 
-	var getUserBySessionToken = function (sessionToken) {
-		var user, query = {};
+	var AuthUsers = settings.userCollection;
+	var AuthUserSessions = settings.sessionCollection;
+
+	var getUserSessionBySessionToken = function (sessionToken) {
+		var session, hash;
 
 		if (isSessionTokenValid(sessionToken)) {
-			query[settings.sessionTokenHashField] = getSessionTokenHash(sessionToken);
-			user = settings.userCollection.findOne(query);
+			hash = getSessionTokenHash(sessionToken);
+			session = AuthUserSessions.findOne({"hash": hash});
+			if (session) {
+				if (Date.now() <= session.expires) {
+					return session;
+				} else {
+					AuthUserSessions.remove({_id: session._id});
+				}
+			}
+		}
+	};
+
+	var getUserBySessionToken = function (sessionToken) {
+		var user, session;
+
+		session = getUserSessionBySessionToken(sessionToken);
+		if (session) {
+			user = AuthUsers.findOne({_id: session.user_id});
 			if (user) {
 				return user;
 			}
@@ -86,14 +108,19 @@ var makeAuthenticationManager = function (serverKey, options) {
 	};
 
 	var getSessionTokenForUser = function (user) {
-		var sessionToken, set = {};
+		var sessionToken, hash;
 
 		// Always generate signed token, since we have no way to retrieve
 		// it once it has been sent to the client upon login. We only store
 		// a hash of this token in the DB for security reasons.
 		sessionToken = generateSignedToken();
-		set[settings.sessionTokenHashField] = getSessionTokenHash(sessionToken);
-		settings.userCollection.update(user._id, {$set: set});
+		hash = getSessionTokenHash(sessionToken);
+
+		AuthUserSessions.insert({
+			user_id: user._id,
+			hash: hash,
+			expires: new Date(Date.now() + settings.sessionLongevitySeconds * 1000).getTime()
+		});
 
 		return sessionToken;
 	};
@@ -102,27 +129,25 @@ var makeAuthenticationManager = function (serverKey, options) {
 		var query = {}, user;
 
 		query[settings.usernameField] = username;
-		user = settings.userCollection.findOne(query);
+		user = AuthUsers.findOne(query);
 
 		if (isUserPasswordCorrect(user, password)) {
 			return getSessionTokenForUser(user);
 		}
 	};
 
-	var clearUserBySessionToken = function (sessionToken) {
+	var clearUserSessions = function (sessionToken) {
 		var user = getUserBySessionToken(sessionToken);
-		var unset = {};
 
 		if (user) {
-			unset[settings.sessionTokenHashField] = 1;
-			settings.userCollection.update(user._id, {$unset: unset});
+			user = AuthUserSessions.remove({user_id: user._id});
 			return true;
 		}
 	};
 
 	return {
 		getSessionTokenForUsernamePassword: getSessionTokenForUsernamePassword,
-		clearUserBySessionToken: clearUserBySessionToken,
+		clearUserSessions: clearUserSessions,
 		getUserBySessionToken: getUserBySessionToken,
 		generatePasswordHash: generatePasswordHash,
 		isUserPasswordCorrect: isUserPasswordCorrect

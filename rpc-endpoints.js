@@ -163,7 +163,7 @@ Meteor.methods({
 		var result;
 
 		if (!this.is_simulation) {
-			result = Auth.clearUserBySessionToken(sessionToken);
+			result = Auth.clearUserSessions(sessionToken);
 
 			if (!result) {
 				throw new Meteor.Error(412, "Unable to logout: session token not matching a user.");
