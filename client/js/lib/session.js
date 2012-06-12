@@ -9,7 +9,7 @@ var initializeSessionToken = function () {
 var rememberSessionToken = function (sessionToken) {
 	sessionToken = sessionToken || "";
 	sessionToken = sessionToken === "" ? "unknown" : sessionToken;
-	$.cookie("X_SESSION_TOKEN", sessionToken);
+	$.cookie("X_SESSION_TOKEN", sessionToken, {expires: 7, path: "/"});
 	Session.set("token", sessionToken);
 };
 
